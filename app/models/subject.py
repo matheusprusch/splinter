@@ -8,6 +8,9 @@ class Subject(db.Model):
     # Additional fields
     nome = db.Column(db.String(200), unique=True, nullable=False)
 
+    def __init__(self, nome):
+        self.nome = nome
+
     def __repr__(self):
         return 'Subject {}>'.format(self.id)
 
@@ -21,3 +24,8 @@ class Subject_Score(db.Model):
     id_area_conhecimento = db.Column(db.Integer,
                                      db.ForeignKey('areas_conhecimento.id'))
     peso = db.Column(db.Integer, nullable=False)
+
+    def __init__(self, id_concurso, id_area_conhecimento, peso):
+        self.id_concurso = id_concurso
+        self.id_area_conhecimento = areas_conhecimento
+        self.peso = peso

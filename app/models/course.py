@@ -14,11 +14,16 @@ class Course(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     # Additional fields
     nome = db.Column(db.String(200), unique=True, nullable=False)
+    descricao = db.Column(db.Text)
     instituicoes = db.relationship('Institution',
                                    secondary=instituicoes_ensino_curso,
                                    backref=db.backref('courses',
                                                       lazy='dynamic')
                                    )
+
+    def __init__(self, nome, descricao):
+        self.nome = nome
+        self.descricao = descricao
 
     def __repr__(self):
         return 'Course {}>'.format(self.id)

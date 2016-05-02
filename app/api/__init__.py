@@ -12,4 +12,6 @@ from . import examination  # Concurso
 from . import course       # Curso
 from . import subject      # Área de Conhecimento
 from . import question     # Pergunta
-from . import user         # Usuários
+from . import user         # Usuário
+from . import pretest      # Simulado
+from . import practice     # Praticar

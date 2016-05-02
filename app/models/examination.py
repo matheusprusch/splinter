@@ -12,6 +12,16 @@ class Examination(db.Model):
     ano = db.Column(db.Integer, nullable=False)
     semestre = db.Column(db.Integer)
     data_inicio = db.Column(db.DateTime)
+    duracao = db.Column(db.Integer)
+
+    def __init__(self, id_instituicao_ensino, nome, ano,
+                 semestre, data_inicio, duracao):
+        self.id_instituicao_ensino = id_instituicao_ensino
+        self.nome = nome
+        self.ano = ano
+        self.semestre = semestre
+        self.data_inicio = data_inicio
+        self.duracao = duracao
 
     def __repr__(self):
         return 'Examination {}>'.format(self.id)
