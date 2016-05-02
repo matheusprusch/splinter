@@ -14,5 +14,11 @@ class Institution(db.Model):
     examinations = db.relationship('Examination', backref='institution',
                                    lazy='dynamic')
 
+    def __init__(self, sigla, nome, site, privado):
+        self.sigla = sigla
+        self.nome = nome
+        self.site = site
+        self.privado = privado
+
     def __repr__(self):
         return 'Institution {}>'.format(self.id)
