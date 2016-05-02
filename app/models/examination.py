@@ -8,8 +8,7 @@ class Examination(db.Model):
     # Additional fields
     id_instituicao_ensino = db.Column(db.Integer,
                                       db.ForeignKey('instituicoes_ensino.id'))
-    institutions = db.relationship('Institution', backref='examinations',
-                                   lazy='dynamic')
+    institutions = db.relationship('Institution', backref='examinations')
     nome = db.Column(db.String(200), nullable=False)
     ano = db.Column(db.Integer, nullable=False)
     semestre = db.Column(db.Integer)

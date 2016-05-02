@@ -1,6 +1,18 @@
 from .. import db
 from datetime import datetime
 
+usuarios_cursos_interesse =\
+    db.Table('usuarios_cursos_interesse',
+             db.Column('id_usuario',
+                       db.Integer,
+                       db.ForeignKey('usuarios.id')
+                       ),
+             db.Column('id_instituicao_ensino', db.Integer,
+                       db.ForeignKey('instituicoes_ensino.id')
+                       ),
+             db.Column('id_curso', db.Integer, db.ForeignKey('cursos.id'))
+             )
+
 
 class User(db.Model):
     __tablename__ = 'usuarios'
@@ -48,16 +60,3 @@ class UserReport(db.Model):
         self.id_area_conhecimento = id_area_conhecimento
         self.numero_acertos = 0
         self.numero_erros = 0
-
-
-usuarios_cursos_interesse =\
-    db.Table('usuarios_cursos_interesse',
-             db.Column('id_usuario',
-                       db.Integer,
-                       db.ForeignKey('usuarios.id')
-                       ),
-             db.Column('id_instituicao_ensino', db.Integer,
-                       db.ForeignKey('instituicoes_ensino.id')
-                       ),
-             db.Column('id_curso', db.Integer, db.ForeignKey('cursos.id'))
-             )

@@ -65,8 +65,7 @@ class QuestionImages(db.Model):
 
     # Relationships
     questions = db.relationship('Question',
-                                backref=db.backref('image', lazy='select'),
-                                lazy='lazy')
+                                backref=db.backref('image', lazy='select'))
 
     def __init__(self, id_questao, id_questao_alternativas, descricao, imagem):
         self.id_questao = id_questao
