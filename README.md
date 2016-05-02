@@ -13,3 +13,6 @@ http://flask-httpauth.readthedocs.io/en/latest/
 
 ## Example of Resources:
 https://github.com/mmautner/simple_api/blob/master/resources.py
+
+## Flask-Migrate
+https://github.com/miguelgrinberg/Flask-Migrate
