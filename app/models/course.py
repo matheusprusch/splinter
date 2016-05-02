@@ -15,7 +15,7 @@ class Course(db.Model):
     # Additional fields
     nome = db.Column(db.String(200), unique=True, nullable=False)
     descricao = db.Column(db.Text)
-    instituicoes = db.relationship('Institution',
+    instutitions = db.relationship('Institution',
                                    secondary=instituicoes_ensino_curso,
                                    backref=db.backref('courses',
                                                       lazy='dynamic')

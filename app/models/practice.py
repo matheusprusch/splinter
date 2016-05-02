@@ -13,6 +13,18 @@ class Practice(db.Model):
                                     db.ForeignKey('questoes_alternativas.id'))
     data_hora = db.Column(db.DateTime)
 
+    # Relationships
+    question = db.relationship('Question',
+                               backref=db.backref('practices', lazy='dynamic'),
+                               lazy='select')
+    choice = db.relationship('Alternatives',
+                             backref=db.backref('practices', lazy='dynamic'),
+                             lazy='select')
+    user = db.relationship('User',
+                           backref=db.backref('practice_questions',
+                                              lazy='dynamic'),
+                           lazy='select')
+
     def __init__(self, id_usuario, id_questao, alternativa_usuario):
         self.id_usuario = id_usuario
         self.id_questao = id_questao

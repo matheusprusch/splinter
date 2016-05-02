@@ -11,8 +11,6 @@ class Institution(db.Model):
     nome = db.Column(db.String(200), unique=True, nullable=False)
     site = db.Column(db.String(100), unique=True, nullable=False)
     privado = db.Column(db.Boolean, nullable=False)
-    examinations = db.relationship('Examination', backref='institution',
-                                   lazy='dynamic')
 
     def __init__(self, sigla, nome, site, privado):
         self.sigla = sigla

@@ -11,6 +11,11 @@ class Pretest(db.Model):
     data_hora_inicio = db.Column(db.DateTime, nullable=False)
     data_hora_fim = db.Column(db.DateTime)
 
+    # Relationships
+    user = db.relationship('User',
+                           backref=db.backref('pretests', lazy='dynamic'),
+                           lazy='select')
+
     def __init__(self, id_usuario):
         self.id_usuario = id_usuario
         self.data_hora_inicio = datetime.now()
@@ -28,6 +33,16 @@ class PretestQuestions(db.Model):
     alternativa_usuario = db.Column(db.Integer,
                                     db.ForeignKey('questoes_alternativas.id'))
     data_hora = db.Column(db.DateTime)
+
+    # Relationships
+    question = db.relationship('Question',
+                               backref=db.backref('pretest_questions',
+                                                  lazy='dynamic'),
+                               lazy='select')
+    choice = db.relationship('Alternatives',
+                             backref=db.backref('pretest_choices',
+                                                lazy='dynamic'),
+                             lazy='select')
 
     def __init__(self, id_simulado, id_questao, id_alternativa):
         self.id_simulado = id_simulado

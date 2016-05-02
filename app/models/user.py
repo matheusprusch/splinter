@@ -14,6 +14,14 @@ class User(db.Model):
     data_cadastro = db.Column(db.DateTime)
     is_admin = db.Column(db.Boolean, nullable=False)
 
+    # Relationships
+    interested_courses =\
+        db.relationship('Course',
+                        secondary=usuarios_cursos_interesse,
+                        backref=db.backref('users_interested', lazy='dynamic'),
+                        lazy='dynamic'
+                        )
+
     def __init__(self, nome, senha, email):
         self.nome = nome
         self.senha = senha

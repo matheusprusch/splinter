@@ -14,6 +14,15 @@ class Question(db.Model):
     numero_acertos = db.Column(db.Integer, default=0)
     numero_erros = db.Column(db.Integer, default=0)
 
+    # Relationships
+    concurso = db.relationship('Examination',
+                               backref=db.backref('questions',
+                                                  lazy='dynamic'),
+                               lazy='select')
+    subject = db.relationship('Subject',
+                              backref=db.backref('questions', lazy='dynamic'),
+                              lazy='select')
+
     def __init__(self, id_concurso, id_area_conhecimento, descricao):
         self.id_concurso = id_concurso
         self.id_area_conhecimento = id_area_conhecimento
@@ -33,6 +42,11 @@ class Alternatives(db.Model):
     descricao = db.Column(db.Text, nullable=False)
     alternativa_correta = db.Column(db.Boolean, default=False)
 
+    # Relationships
+    question = db.relationship('Question',
+                               backref=db.backref('choices', lazy='dynamic'),
+                               lazy='select')
+
     def __init__(self, id_questao, descricao, alternativa_correta):
         self.id_questao = id_questao
         self.descricao = descricao
@@ -48,6 +62,11 @@ class QuestionImages(db.Model):
         db.Column(db.Integer, db.ForeignKey('questoes_alternativas.id'))
     descricao = db.Column(db.Text)
     imagem = db.Column(db.Text, nullable=False)
+
+    # Relationships
+    questions = db.relationship('Question',
+                                backref=db.backref('image', lazy='select'),
+                                lazy='lazy')
 
     def __init__(self, id_questao, id_questao_alternativas, descricao, imagem):
         self.id_questao = id_questao
