@@ -66,7 +66,8 @@ def upgrade():
     sa.Column('id_instituicao_ensino', sa.Integer(), nullable=True),
     sa.Column('id_curso', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['id_curso'], ['cursos.id'], ),
-    sa.ForeignKeyConstraint(['id_instituicao_ensino'], ['instituicoes_ensino.id'], )
+    sa.ForeignKeyConstraint(['id_instituicao_ensino'], ['instituicoes_ensino.id'], ),
+    sa.PrimaryKeyConstraint('id_instituicao_ensino', 'id_curso')
     )
     op.create_table('praticar_simulados',
     sa.Column('id', sa.Integer(), nullable=False),

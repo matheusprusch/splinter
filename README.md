@@ -1,34 +1,41 @@
 # Splinter - O mestre do Estudo
+## Pre-requisites
+This is set up using PostgreSQL already, and with DEBUG mode enabled by default. So make sure to have PostgreSQL already installed with:
+* a 'postgres' user
+* a 'splinter' database
+
+Or simply modify the `config.py` file accordingly.
+
 ## Setup
 1. Install [`virtualenv`](https://virtualenv.pypa.io/en/latest/userguide.html#usage)
-```bash
+    ```bash
 $ [sudo] pip install virtualenv
-```
+    ```
 2. Download this Repository:
-```bash
-$ git clone https://github.com/matheusprusch/splinter.git
-```
+    ```bash
+    $ git clone https://github.com/matheusprusch/splinter.git
+    ```
 3. Inside it, create a new virtual environment:
-```bash
-$ virtualenv env
-```
+    ```bash
+    $ virtualenv env
+    ```
 4. Then activate it:
-```bash
-$ source bin/activate
-```
+    ```bash
+    $ source bin/activate
+    ```
 Or, on Windows:
-```
-\path\to\env\Scripts\activate
-```
+    ```
+    \path\to\env\Scripts\activate
+    ```
 5. Finally, do:
-```bash
-pip install -r requirements.txt
-```
+    ```bash
+    pip install -r requirements.txt
+    ```
 This will install all dependencies for you.
 6. You can then start the app with:
-```bash
-$ ./manage.py runserver
-```
+    ```bash
+    $ ./manage.py runserver
+    ```
 
 ## Project Structure
 ```
@@ -57,22 +64,23 @@ $ ./manage.py db upgrade
 ```
 
 ## Useful Links
-## Yo Generator and Template
+#### Yo Generator and Template
 https://github.com/yeoman/yo
 https://github.com/ColeKettler/generator-flask-api
 
-## Flask-RESTful
+#### Flask-RESTful
 http://flask-restful-cn.readthedocs.io/en/0.3.4/index.html
 http://kzky.hatenablog.com/entry/2015/11/02/Flask-Restful
 
-## Flask-SQLAlchemy
+#### Flask-SQLAlchemy
 http://flask-sqlalchemy.pocoo.org/2.1/
+https://www.codementor.io/python/tutorial/understanding-sqlalchemy-cheat-sheet
 
-## Flask-HTTPAuth
+#### Flask-HTTPAuth
 http://flask-httpauth.readthedocs.io/en/latest/
 
-## Example of Resources:
+#### Example of Resources:
 https://github.com/mmautner/simple_api/blob/master/resources.py
 
-## Flask-Migrate
+#### Flask-Migrate
 https://github.com/miguelgrinberg/Flask-Migrate

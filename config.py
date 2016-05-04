@@ -16,9 +16,7 @@ class ProductionConfig(Config):
 
 class DevelopmentConfig(Config):
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = os.environ.get(
-        'APP_DEVELOPMENT_DATABASE_URI'
-    )
+    SQLALCHEMY_DATABASE_URI = 'postgresql://postgres@localhost/splinter'
 
 
 class TestingConfig(Config):
@@ -30,5 +28,5 @@ config = {
     'production': ProductionConfig,
     'development': DevelopmentConfig,
     'testing': TestingConfig,
-    'default': TestingConfig,
+    'default': DevelopmentConfig,
 }
