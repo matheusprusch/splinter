@@ -19,9 +19,9 @@ class Institution(db.Model):
         self.privado = privado
 
     def __repr__(self):
-        string = {'id': self.id,
-                  'sigla': self.sigla,
-                  'nome': self.nome,
-                  'site': self.site,
-                  'privado': self.privado}
+        string = {"id": self.id,
+                  "sigla": self.sigla,
+                  "nome": self.nome,
+                  "site": self.site,
+                  "privado": self.privado}
         return str(string)

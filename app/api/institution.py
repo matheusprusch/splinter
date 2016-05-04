@@ -1,6 +1,7 @@
 # coding=utf-8
 from flask import jsonify, request
-from flask_restful import Resource, Api, reqparse, fields, marshal_with, abort, marshal
+from flask_restful import Resource, Api, reqparse
+from flask_restful import fields, marshal_with, abort, marshal
 
 from . import api as api_bp
 from .. import db
@@ -13,6 +14,7 @@ institution_fields = {
     'sigla': fields.String,
     'nome': fields.String,
     'site': fields.String,
+    'privado': fields.Boolean,
     'uri': fields.Url('api.institution', absolute=True)
 }
 
@@ -32,8 +34,34 @@ class Institution(Resource):
         i = InstitutionModel.query.filter_by(id=id).first_or_404()
         return i, 200
 
-    def put(self, institution_id):
-        pass
+    @marshal_with(institution_fields)
+    def put(self, id):
+        args = parser.parse_args()
+        inst = InstitutionModel.query.filter_by(id=id).first_or_404()
+
+        # Make sure required fields are there
+        if args['sigla'] and args['nome'] and args['site'] and\
+                args['privado'] is not None:
+
+            # Make sure the fields are unique
+            if InstitutionModel.query.filter(InstitutionModel.id != 2).\
+                filter((InstitutionModel.sigla == args['sigla']) |
+                       (InstitutionModel.nome == args['nome']) |
+                       (InstitutionModel.site == args['site'])
+                       ).first():
+                abort(409,
+                      message="An institution with this name, site or " +
+                      "accronym already exists")
+            else:
+                inst.sigla = args['sigla']
+                inst.nome = args['nome']
+                inst.site = args['site']
+                inst.privado = args['privado']
+        else:
+            abort(409, message="Missing fields")
+        db.session.commit()
+        inst.id
+        return inst
 
 
 class InstitutionsList(Resource):
@@ -45,8 +73,11 @@ class InstitutionsList(Resource):
     @marshal_with(institution_fields)
     def post(self):
         args = parser.parse_args()
-        if InstitutionModel.query.filter_by(sigla=args['sigla']).first() or\
-                InstitutionModel.query.filter_by(nome=args['nome']).first():
+        if InstitutionModel.query.\
+            filter((InstitutionModel.sigla == args['sigla']) |
+                   (InstitutionModel.nome == args['nome']) |
+                   (InstitutionModel.site == args['site'])
+                   ).first():
             abort(409, message="This institution already exists.")
         institution = InstitutionModel(args['sigla'],
                                        args['nome'],
