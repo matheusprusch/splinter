@@ -4,7 +4,8 @@ instituicoes_ensino_curso =\
     db.Table('instituicoes_ensino_curso',
              db.Column('id_instituicao_ensino', db.Integer,
                        db.ForeignKey('instituicoes_ensino.id')),
-             db.Column('id_curso', db.Integer, db.ForeignKey('cursos.id'))
+             db.Column('id_curso', db.Integer, db.ForeignKey('cursos.id')),
+             db.PrimaryKeyConstraint('id_instituicao_ensino', 'id_curso')
              )
 
 
@@ -15,10 +16,10 @@ class Course(db.Model):
     # Additional fields
     nome = db.Column(db.String(200), unique=True, nullable=False)
     descricao = db.Column(db.Text)
-    instutitions = db.relationship('Institution',
+    instituicoes = db.relationship('Institution',
                                    secondary=instituicoes_ensino_curso,
                                    backref=db.backref('courses',
-                                                      lazy='dynamic')
+                                                      lazy='dynamic'),
                                    )
 
     def __init__(self, nome, descricao):
@@ -26,4 +27,10 @@ class Course(db.Model):
         self.descricao = descricao
 
     def __repr__(self):
-        return 'Course {}>'.format(self.id)
+        r = {
+            "id": self.id,
+            "nome": self.nome,
+            "descricao": self.descricao,
+            "instituicoes": self.instituicoes
+            }
+        return str(r)
