@@ -21,7 +21,7 @@ $ [sudo] pip install virtualenv
     ```
 4. Then activate it:
     ```bash
-    $ source bin/activate
+    $ source env/bin/activate
     ```
 Or, on Windows:
     ```
