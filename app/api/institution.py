@@ -19,12 +19,12 @@ institution_fields = {
 }
 
 parser = reqparse.RequestParser()
-parser.add_argument('sigla', help='Sigla que identifica a instituição')
-parser.add_argument('nome', help='Nome da instituição')
+parser.add_argument('sigla', help='Sigla que identifica a instituição', location='json')
+parser.add_argument('nome', help='Nome da instituição', location='json')
 parser.add_argument('site', type=fields.inputs.url,
-                    help='URL do site da instituição')
+                    help='URL do site da instituição', location='json')
 parser.add_argument('privado', type=bool,
-                    help='Se a instituição é privada')
+                    help='Se a instituição é privada', location='json')
 
 
 class Institution(Resource):
@@ -72,17 +72,17 @@ class InstitutionsList(Resource):
 
     @marshal_with(institution_fields)
     def post(self):
-        args = parser.parse_args()
+        json_data = request.get_json(force=True)
         if InstitutionModel.query.\
-            filter((InstitutionModel.sigla == args['sigla']) |
-                   (InstitutionModel.nome == args['nome']) |
-                   (InstitutionModel.site == args['site'])
+            filter((InstitutionModel.sigla == json_data['sigla']) |
+                   (InstitutionModel.nome == json_data['nome']) |
+                   (InstitutionModel.site == json_data['site'])
                    ).first():
             abort(409, message="This institution already exists.")
-        institution = InstitutionModel(args['sigla'],
-                                       args['nome'],
-                                       args['site'],
-                                       args['privado'])
+        institution = InstitutionModel(json_data['sigla'],
+                                       json_data['nome'],
+                                       json_data['site'],
+                                       json_data['privado'])
         db.session.add(institution)
         db.session.commit()
         return institution, 201
