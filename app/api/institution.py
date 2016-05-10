@@ -74,7 +74,7 @@ class Institution(Resource):
         except IntegrityError:
             abort(409, message="You can't delete an institution that is used in other models.")
 
-        return None, 204
+        return inst, 204
 
 
 class InstitutionsList(Resource):
