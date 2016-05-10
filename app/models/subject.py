@@ -27,5 +27,5 @@ class Subject_Score(db.Model):
 
     def __init__(self, id_concurso, id_area_conhecimento, peso):
         self.id_concurso = id_concurso
-        self.id_area_conhecimento = areas_conhecimento
+        self.id_area_conhecimento = id_area_conhecimento
         self.peso = peso

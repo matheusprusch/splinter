@@ -16,7 +16,7 @@ class ProductionConfig(Config):
 
 class DevelopmentConfig(Config):
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = 'postgresql://postgres@localhost/splinter'
+    SQLALCHEMY_DATABASE_URI = 'postgresql://postgres:root@localhost/splinter'
 
 
 class TestingConfig(Config):

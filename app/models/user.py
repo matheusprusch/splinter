@@ -55,7 +55,7 @@ class UserReport(db.Model):
     numero_acertos = db.Column(db.Integer)
     numero_erros = db.Column(db.Integer)
 
-    def __init__(self):
+    def __init__(self, id_usuario, id_area_conhecimento):
         self.id_usuario = id_usuario
         self.id_area_conhecimento = id_area_conhecimento
         self.numero_acertos = 0

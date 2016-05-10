@@ -3,6 +3,8 @@ from flask import jsonify, request
 from flask_restful import Resource, Api, reqparse
 from flask_restful import fields, marshal_with, abort, marshal
 
+from sqlalchemy.exc import IntegrityError
+
 from . import api as api_bp
 from .. import db
 from ..models.institution import Institution as InstitutionModel
@@ -36,7 +38,7 @@ class Institution(Resource):
 
     @marshal_with(institution_fields)
     def put(self, id):
-        args = parser.parse_args()
+        args = request.get_json(force=True)
         inst = InstitutionModel.query.filter_by(id=id).first_or_404()
 
         # Make sure required fields are there
@@ -44,7 +46,7 @@ class Institution(Resource):
                 args['privado'] is not None:
 
             # Make sure the fields are unique
-            if InstitutionModel.query.filter(InstitutionModel.id != 2).\
+            if InstitutionModel.query.filter(InstitutionModel.id != args['id']).\
                 filter((InstitutionModel.sigla == args['sigla']) |
                        (InstitutionModel.nome == args['nome']) |
                        (InstitutionModel.site == args['site'])
@@ -62,6 +64,17 @@ class Institution(Resource):
         db.session.commit()
         inst.id
         return inst
+
+    @marshal_with(institution_fields)
+    def delete(self, id):
+        inst = InstitutionModel.query.filter_by(id=id).first_or_404()
+        try:
+            db.session.delete(inst)
+            db.session.commit()
+        except IntegrityError:
+            abort(409, message="You can't delete an institution that is used in other models.")
+
+        return None, 204
 
 
 class InstitutionsList(Resource):
