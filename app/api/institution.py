@@ -65,7 +65,6 @@ class Institution(Resource):
         inst.id
         return inst
 
-    @marshal_with(institution_fields)
     def delete(self, id):
         inst = InstitutionModel.query.filter_by(id=id).first_or_404()
         try:
@@ -74,7 +73,7 @@ class Institution(Resource):
         except IntegrityError:
             abort(409, message="You can't delete an institution that is used in other models.")
 
-        return inst, 204
+        return 204
 
 
 class InstitutionsList(Resource):
