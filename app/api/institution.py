@@ -61,14 +61,16 @@ class Institution(Resource):
                 inst.privado = args['privado']
         else:
             abort(409, message="Missing fields")
+
+        # Commit and return
         db.session.commit()
         inst.id
         return inst
 
     def delete(self, id):
-        inst = InstitutionModel.query.filter_by(id=id).first_or_404()
+        institution = InstitutionModel.query.filter_by(id=id).first_or_404()
         try:
-            db.session.delete(inst)
+            db.session.delete(institution)
             db.session.commit()
         except IntegrityError:
             abort(409, message="You can't delete an institution that is used in other models.")
@@ -79,22 +81,22 @@ class Institution(Resource):
 class InstitutionsList(Resource):
 
     def get(self):
-        ins = InstitutionModel.query.all()
-        return {'institutions': marshal(ins, institution_fields)}, 200
+        institution = InstitutionModel.query.all()
+        return {'institutions': marshal(institution, institution_fields)}, 200
 
     @marshal_with(institution_fields)
     def post(self):
-        json_data = request.get_json(force=True)
+        args = request.get_json(force=True)
         if InstitutionModel.query.\
-            filter((InstitutionModel.sigla == json_data['sigla']) |
-                   (InstitutionModel.nome == json_data['nome']) |
-                   (InstitutionModel.site == json_data['site'])
+            filter((InstitutionModel.sigla == args['sigla']) |
+                   (InstitutionModel.nome == args['nome']) |
+                   (InstitutionModel.site == args['site'])
                    ).first():
             abort(409, message="This institution already exists.")
-        institution = InstitutionModel(json_data['sigla'],
-                                       json_data['nome'],
-                                       json_data['site'],
-                                       json_data['privado'])
+        institution = InstitutionModel(args['sigla'],
+                                       args['nome'],
+                                       args['site'],
+                                       args['privado'])
         db.session.add(institution)
         db.session.commit()
         return institution, 201
