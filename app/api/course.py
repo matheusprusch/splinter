@@ -23,6 +23,7 @@ parser.add_argument('id', help="ID do curso", required=False)
 parser.add_argument('nome', help="Titulo do curso")
 parser.add_argument('descricao', help="Descrição do curso")
 
+
 class Course(Resource):
 
     @marshal_with(course_fields)
@@ -42,7 +43,7 @@ class Course(Resource):
             if CourseModel.query.filter(CourseModel.id != args['id']).\
                 filter(CourseModel.nome == args['nome']).first():
                 abort(409,
-                      message="An course with this name already exists")
+                      message="A course with this name already exists")
             else:
                 course.nome = args['nome']
                 course.descricao = args['descricao']
