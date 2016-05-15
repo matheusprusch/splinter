@@ -3,6 +3,8 @@ from flask import jsonify, request
 from flask_restful import Resource, Api, reqparse
 from flask_restful import fields, marshal_with, abort, marshal
 
+from sqlalchemy.exc import IntegrityError
+
 from . import api as api_bp
 from .. import db
 from ..models.examination import Examination as ExaminationModel
@@ -66,6 +68,16 @@ class Examination(Resource):
         db.session.commit()
         examination.id
         return examination
+
+    def delete(self, id):
+        examination = ExaminationModel.query.filter_by(id=id).first_or_404()
+        try:
+            db.session.delete(examination)
+            db.session.commit()
+        except IntegrityError:
+            abort(409, message="You can't delete an examination that is used in other models.")
+
+        return 204
 
 
 class ExaminationList(Resource):
