@@ -10,7 +10,7 @@ class Config(object):
 
 class ProductionConfig(Config):
     SQLALCHEMY_DATABASE_URI = os.environ.get(
-        'APP_PRODUCTION_DATABASE_URI'
+        'DATABASE_URL'
     )
 
 
