@@ -11,9 +11,32 @@ from ..models.examination import Examination as ExaminationModel
 
 api = Api(api_bp)
 
+institution_fields = {
+    'id': fields.Integer,
+    'sigla': fields.String,
+    'nome': fields.String,
+    'site': fields.String,
+    'privado': fields.Boolean,
+    'uri': fields.Url('api.institution', absolute=True)
+}
+
+subject_fields = {
+    'id': fields.Integer,
+    'nome': fields.String,
+}
+
+question_fields = {
+    'id': fields.Integer,
+    'area_conhecimento': fields.Nested(subject_fields),
+    'descricao': fields.String,
+    'numero_acertos': fields.Integer,
+    'numero_erros': fields.Integer
+}
+
 examination_fields = {
     'id': fields.Integer,
-    'id_instituicao_ensino': fields.Integer,
+    'instituicao': fields.Nested(institution_fields),
+    'questoes': fields.Nested(question_fields),
     'nome': fields.String,
     'ano': fields.String,
     'semestre': fields.Integer,
@@ -24,7 +47,8 @@ examination_fields = {
 
 parser = reqparse.RequestParser()
 parser.add_argument('id', help="ID do concurso", required=False)
-parser.add_argument('id_instituicao_ensino', help="ID da instituicao que tem o concurso", required=False)
+parser.add_argument('instituicao', help="Instituicao que tem o concurso", required=False)
+parser.add_argument('questoes', help="Questoes de um concurso")
 parser.add_argument('nome', help="Nome do concurso")
 parser.add_argument('ano', help="Ano do concurso")
 parser.add_argument('semestre', help="Semestre do concurso")
