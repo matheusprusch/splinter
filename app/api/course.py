@@ -9,10 +9,19 @@ from ..models.course import Course as CourseModel
 
 api = Api(api_bp)
 
+institution_fields = {
+    'id': fields.Integer,
+    'sigla': fields.String,
+    'nome': fields.String,
+    'site': fields.String,
+    'uri': fields.Url('api.institution', absolute=True)
+}
+
 course_fields = {
     'id': fields.Integer,
     'nome': fields.String,
     'descricao': fields.String,
+    'instituicoes': fields.Nested(institution_fields),
     'uri': fields.Url('api.course', absolute=True)
 }
 
