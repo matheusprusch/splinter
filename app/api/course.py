@@ -3,8 +3,6 @@ from flask import jsonify, request
 from flask_restful import Resource, Api, reqparse
 from flask_restful import fields, marshal_with, abort, marshal
 
-from sqlalchemy.exc import IntegrityError
-
 from . import api as api_bp
 from .. import db
 from ..models.course import Course as CourseModel

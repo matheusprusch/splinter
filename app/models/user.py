@@ -34,12 +34,12 @@ class User(db.Model):
                         lazy='dynamic'
                         )
 
-    def __init__(self, nome, senha, email):
+    def __init__(self, nome, email, senha, is_admin):
         self.nome = nome
-        self.senha = senha
         self.email = email
+        self.senha = senha
+        self.is_admin = is_admin
         self.data_cadastro = datetime.now()
-        self.is_admin = False
 
     def __repr__(self):
         return 'User {}>'.format(self.id)

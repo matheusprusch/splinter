@@ -21,12 +21,10 @@ institution_fields = {
 }
 
 parser = reqparse.RequestParser()
-parser.add_argument('sigla', help='Sigla que identifica a instituição', location='json')
-parser.add_argument('nome', help='Nome da instituição', location='json')
-parser.add_argument('site', type=fields.inputs.url,
-                    help='URL do site da instituição', location='json')
-parser.add_argument('privado', type=bool,
-                    help='Se a instituição é privada', location='json')
+parser.add_argument('sigla', help='Sigla que identifica a instituição')
+parser.add_argument('nome', help='Nome da instituição')
+parser.add_argument('site', type=fields.inputs.url, help='URL do site da instituição')
+parser.add_argument('privado', type=bool, help='Se a instituição é privada')
 
 
 class Institution(Resource):
@@ -48,12 +46,11 @@ class Institution(Resource):
             # Make sure the fields are unique
             if InstitutionModel.query.filter(InstitutionModel.id != args['id']).\
                 filter((InstitutionModel.sigla == args['sigla']) |
-                       (InstitutionModel.nome == args['nome']) |
-                       (InstitutionModel.site == args['site'])
+                       (InstitutionModel.nome == args['nome'])
                        ).first():
                 abort(409,
-                      message="An institution with this name, site or " +
-                      "accronym already exists")
+                      message="An institution with this accronym or name" +
+                      " already exists")
             else:
                 inst.sigla = args['sigla']
                 inst.nome = args['nome']
@@ -89,8 +86,7 @@ class InstitutionsList(Resource):
         args = request.get_json(force=True)
         if InstitutionModel.query.\
             filter((InstitutionModel.sigla == args['sigla']) |
-                   (InstitutionModel.nome == args['nome']) |
-                   (InstitutionModel.site == args['site'])
+                   (InstitutionModel.nome == args['nome'])
                    ).first():
             abort(409, message="This institution already exists.")
         institution = InstitutionModel(args['sigla'],
