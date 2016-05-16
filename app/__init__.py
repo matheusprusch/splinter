@@ -2,15 +2,17 @@ from flask import Flask
 from flask.ext.marshmallow import Marshmallow
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.cors import CORS
+from flask_httpauth import HTTPBasicAuth
 
 from config import config
 
-
+auth = HTTPBasicAuth()
 db = SQLAlchemy()
 ma = Marshmallow()
 
 
 def create_app(config_name):
+    from . import authentication
     app = Flask(__name__)
     app.config.from_object(config[config_name])
     CORS(app)
@@ -20,5 +22,11 @@ def create_app(config_name):
 
     from .api import api as api_blueprint
     app.register_blueprint(api_blueprint, url_prefix='')
+
+    @app.route('/')
+    @auth.login_required
+    @authentication.is_administrator
+    def index():
+        return "Hello, %s!" % auth.username()
 
     return app

@@ -63,6 +63,19 @@ $ ./manage.py db migrate
 $ ./manage.py db upgrade
 ```
 
+## Authentication
+To add authentication (auth.login_required) and verify if the user is admin (aithentication.is_administrator) to the methods on the app/api modules, simply do:
+```python
+from .. import authentication
+from .. import auth
+[...]
+
+@auth.login_required
+@authentication.is_administrator
+def get():
+    pass
+```
+
 ## Useful Links
 #### Yo Generator and Template
 https://github.com/yeoman/yo
