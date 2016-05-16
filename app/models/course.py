@@ -18,9 +18,8 @@ class Course(db.Model):
     descricao = db.Column(db.Text)
     instituicoes = db.relationship('Institution',
                                    secondary=instituicoes_ensino_curso,
-                                   backref=db.backref('courses',
-                                                      lazy='dynamic'),
-                                   )
+                                   backref=db.backref('cursos'),
+                                   lazy='select')
 
     def __init__(self, nome, descricao):
         self.nome = nome
