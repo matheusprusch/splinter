@@ -8,8 +8,26 @@ from sqlalchemy.exc import IntegrityError
 from . import api as api_bp
 from .. import db
 from ..models.institution import Institution as InstitutionModel
+from ..models.course import Course as CourseModel
 
 api = Api(api_bp)
+
+course_fields = {
+    'id': fields.Integer,
+    'nome': fields.String,
+    'descricao': fields.String,
+    'uri': fields.Url('api.course', absolute=True)
+}
+
+examination_fields = {
+    'id': fields.Integer,
+    'nome': fields.String,
+    'ano': fields.String,
+    'semestre': fields.Integer,
+    'data_inicio': fields.DateTime,
+    'duracao': fields.Integer,
+    'uri': fields.Url('api.examination', absolute=True)
+}
 
 institution_fields = {
     'id': fields.Integer,
@@ -17,6 +35,8 @@ institution_fields = {
     'nome': fields.String,
     'site': fields.String,
     'privado': fields.Boolean,
+    'cursos': fields.Nested(course_fields),
+    'concursos': fields.Nested(examination_fields),
     'uri': fields.Url('api.institution', absolute=True)
 }
 
@@ -25,6 +45,10 @@ parser.add_argument('sigla', help='Sigla que identifica a instituição')
 parser.add_argument('nome', help='Nome da instituição')
 parser.add_argument('site', type=fields.inputs.url, help='URL do site da instituição')
 parser.add_argument('privado', type=bool, help='Se a instituição é privada')
+parser.add_argument('cursos', type=list,
+                    help="Cursos oferecidos pela instituição", location='json')
+parser.add_argument('concursos', type=list,
+                    help="Concursos oferecidos pela instituição", location='json')
 
 
 class Institution(Resource):
@@ -56,6 +80,36 @@ class Institution(Resource):
                 inst.nome = args['nome']
                 inst.site = args['site']
                 inst.privado = args['privado']
+
+                if args['cursos']:
+                    # Get the ids of cursos already linked
+                    existing_institutions = [cursos.id for
+                                             cursos in inst.cursos]
+
+                    courses = []
+                    for i in args['cursos']:
+                        courses.append(i['id'])
+
+                    for i in courses:
+                        if i in existing_institutions:
+                            # We shouldn't do anything. It'd cause duplicate pk
+                             continue
+                        else:
+                            inst.cursos.append(
+                                CourseModel.query.filter_by(id=i).first()
+                            )
+
+                    for i in existing_institutions:
+                        if i in courses:
+                            # We shouldn't do anything. It'd cause duplicate pk
+                             continue
+                        else:
+                            inst.cursos.remove(
+                                CourseModel.query.filter_by(id=i).first()
+                            )
+                else:
+                    inst.cursos = []
+
         else:
             abort(409, message="Missing fields")
 
