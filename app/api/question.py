@@ -1,30 +1,48 @@
 from flask import jsonify, request
+from flask_restful import Resource, Api, reqparse
+from flask_restful import fields, marshal_with, abort, marshal
 
-from . import api
+from . import api as api_bp
 from .. import db
-from ..models.question import Question
+from ..models.question import Question as QuestionModel
+
+api = Api(api_bp)
+
+question_fields = {
+    'id': fields.Integer,
+    'id_concurso': fields.Integer,
+    'id_area_conhecimento': fields.Integer,
+    'descricao': fields.String,
+    'numero_acertos': fields.Integer,
+    'numero_erros': fields.Integer
+}
 
 
-@api.route('/questions', methods=['GET'])
-def get_questions():
-    pass
+class Question(Resource):
+
+    @marshal_with(question_fields)
+    def get(self, id):
+        question = QuestionModel.query.filter_by(id=id).first_or_404()
+        return question, 200
 
 
-@api.route('/questions/<int:id>', methods=['GET'])
-def get_question(id):
-    pass
+class QuestionsList(Resource):
+    def get(self):
+        questions = QuestionModel.query.all()
+        return {'questions': marshal(questions, question_fields)}, 200
 
+    @marshal_with(question_fields)
+    def post(self):
+        args = request.get_json(force=True)
+        if QuestionModel.query.\
+            filter(QuestionModel.descricao == args['descricao']).first():
+            abort(409, message="This question already exists.")
+        question = QuestionModel(args['id_concurso'],
+                                       args['id_area_conhecimento'],
+                                       args['descricao'])
+        db.session.add(question)
+        db.session.commit()
+        return question, 201
 
-@api.route('/questions', methods=['POST'])
-def create_question():
-    pass
-
-
-@api.route('/questions/<int:id>', methods=['PUT'])
-def update_question(id):
-    pass
-
-
-@api.route('/questions/<int:id>', methods=['DELETE'])
-def delete_question(id):
-    pass
+api.add_resource(QuestionsList, '/questions')
+api.add_resource(Question, '/question/<int:id>')

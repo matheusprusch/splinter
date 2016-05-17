@@ -21,6 +21,7 @@ parser = reqparse.RequestParser()
 parser.add_argument('id', help="ID do curso", required=False)
 parser.add_argument('nome', help="Titulo do curso")
 
+
 class Subject(Resource):
 
     @marshal_with(subject_fields)

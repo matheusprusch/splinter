@@ -16,11 +16,10 @@ class Question(db.Model):
 
     # Relationships
     concurso = db.relationship('Examination',
-                               backref=db.backref('questions',
-                                                  lazy='dynamic'),
+                               backref=db.backref('questoes'),
                                lazy='select')
-    subject = db.relationship('Subject',
-                              backref=db.backref('questions', lazy='dynamic'),
+    area_conhecimento = db.relationship('Subject',
+                              backref=db.backref('questoes'),
                               lazy='select')
 
     def __init__(self, id_concurso, id_area_conhecimento, descricao):
