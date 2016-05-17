@@ -19,6 +19,16 @@ course_fields = {
     'uri': fields.Url('api.course', absolute=True)
 }
 
+examination_fields = {
+    'id': fields.Integer,
+    'nome': fields.String,
+    'ano': fields.String,
+    'semestre': fields.Integer,
+    'data_inicio': fields.DateTime,
+    'duracao': fields.Integer,
+    'uri': fields.Url('api.examination', absolute=True)
+}
+
 institution_fields = {
     'id': fields.Integer,
     'sigla': fields.String,
@@ -26,6 +36,7 @@ institution_fields = {
     'site': fields.String,
     'privado': fields.Boolean,
     'cursos': fields.Nested(course_fields),
+    'concursos': fields.Nested(examination_fields),
     'uri': fields.Url('api.institution', absolute=True)
 }
 
@@ -36,6 +47,8 @@ parser.add_argument('site', type=fields.inputs.url, help='URL do site da institu
 parser.add_argument('privado', type=bool, help='Se a instituição é privada')
 parser.add_argument('cursos', type=list,
                     help="Cursos oferecidos pela instituição", location='json')
+parser.add_argument('concursos', type=list,
+                    help="Concursos oferecidos pela instituição", location='json')
 
 
 class Institution(Resource):
