@@ -20,23 +20,22 @@ institution_fields = {
     'uri': fields.Url('api.institution', absolute=True)
 }
 
-subject_fields = {
-    'id': fields.Integer,
-    'nome': fields.String,
-}
+# subject_fields = {
+#     'id': fields.Integer,
+#     'nome': fields.String,
+# }
 
-question_fields = {
-    'id': fields.Integer,
-    'area_conhecimento': fields.Nested(subject_fields),
-    'descricao': fields.String,
-    'numero_acertos': fields.Integer,
-    'numero_erros': fields.Integer
-}
+# question_fields = {
+#     'id': fields.Integer,
+#     'area_conhecimento': fields.Nested(subject_fields),
+#     'descricao': fields.String,
+#     'numero_acertos': fields.Integer,
+#     'numero_erros': fields.Integer
+# }
 
 examination_fields = {
     'id': fields.Integer,
     'instituicao': fields.Nested(institution_fields),
-    'questoes': fields.Nested(question_fields),
     'nome': fields.String,
     'ano': fields.String,
     'semestre': fields.Integer,

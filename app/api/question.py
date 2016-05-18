@@ -44,5 +44,13 @@ class QuestionsList(Resource):
         db.session.commit()
         return question, 201
 
+
+class QuestionsExamination(Resource):
+    def get(self, examination_id):
+        questions = QuestionModel.query.filter_by(id_concurso=examination_id).all()
+        return {'questions': marshal(questions, question_fields)}, 200
+
+
 api.add_resource(QuestionsList, '/questions')
+api.add_resource(QuestionsExamination, '/questions/examination/<int:examination_id>')
 api.add_resource(Question, '/question/<int:id>')
