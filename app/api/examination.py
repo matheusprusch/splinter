@@ -20,19 +20,6 @@ institution_fields = {
     'uri': fields.Url('api.institution', absolute=True)
 }
 
-# subject_fields = {
-#     'id': fields.Integer,
-#     'nome': fields.String,
-# }
-
-# question_fields = {
-#     'id': fields.Integer,
-#     'area_conhecimento': fields.Nested(subject_fields),
-#     'descricao': fields.String,
-#     'numero_acertos': fields.Integer,
-#     'numero_erros': fields.Integer
-# }
-
 examination_fields = {
     'id': fields.Integer,
     'instituicao': fields.Nested(institution_fields),
@@ -112,7 +99,7 @@ class ExaminationList(Resource):
     @marshal_with(examination_fields)
     def post(self):
         args = request.get_json(force=True)
-        if ExaminationModel.query.\
+        if ExaminationModel.query.filter_by(id_instituicao_ensino=args['id_instituicao_ensino']).\
             filter((ExaminationModel.nome == args['nome']) |
                    (ExaminationModel.ano == args['ano']) |
                    (ExaminationModel.semestre == args['semestre'])
