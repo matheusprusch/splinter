@@ -33,7 +33,8 @@ examination_fields = {
 
 parser = reqparse.RequestParser()
 parser.add_argument('id', help="ID do concurso", required=False)
-parser.add_argument('instituicao', help="Instituicao que tem o concurso", required=False)
+parser.add_argument('instituicao', help="Instituicao que tem o concurso",
+                    required=False)
 parser.add_argument('questoes', help="Questoes de um concurso")
 parser.add_argument('nome', help="Nome do concurso")
 parser.add_argument('ano', help="Ano do concurso")
@@ -57,7 +58,8 @@ class Examination(Resource):
         if args['nome'] and args['ano'] and args['semestre'] is not None:
 
             # Make sure the fields are unique
-            if ExaminationModel.query.filter(ExaminationModel.id != args['id']).\
+            if ExaminationModel.query.filter(
+                ExaminationModel.id != args['id']).\
                 filter((ExaminationModel.nome == args['nome']) |
                        (ExaminationModel.ano == args['ano']) |
                        (ExaminationModel.semestre == args['semestre'])
@@ -65,7 +67,8 @@ class Examination(Resource):
                 abort(409,
                       message="An examination with this name already exists")
             else:
-                examination.id_instituicao_ensino = args['id_instituicao_ensino']
+                examination.id_instituicao_ensino = \
+                    args['id_instituicao_ensino']
                 examination.nome = args['nome']
                 examination.ano = args['ano']
                 examination.semestre = args['semestre']
@@ -85,7 +88,8 @@ class Examination(Resource):
             db.session.delete(examination)
             db.session.commit()
         except IntegrityError:
-            abort(409, message="You can't delete an examination that is used in other models.")
+            abort(409, message="You can't delete an examination" +
+                  "that is used in other models.")
 
         return 204
 
@@ -99,9 +103,10 @@ class ExaminationList(Resource):
     @marshal_with(examination_fields)
     def post(self):
         args = request.get_json(force=True)
-        if ExaminationModel.query.filter_by(id_instituicao_ensino=args['id_instituicao_ensino']).\
+        if ExaminationModel.query.filter_by(
+            id_instituicao_ensino=args['id_instituicao_ensino']).\
             filter((ExaminationModel.nome == args['nome']) |
-                   (ExaminationModel.ano == args['ano']) |
+                   (ExaminationModel.ano == args['ano']) &
                    (ExaminationModel.semestre == args['semestre'])
                    ).first():
             abort(409, message="This examination already exists.")
