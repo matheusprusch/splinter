@@ -60,8 +60,8 @@ class Examination(Resource):
             # Make sure the fields are unique
             if ExaminationModel.query.filter(
                 ExaminationModel.id != args['id']).\
-                filter((ExaminationModel.nome == args['nome']) |
-                       (ExaminationModel.ano == args['ano']) |
+                filter((ExaminationModel.nome == args['nome']) &
+                       (ExaminationModel.ano == args['ano']) &
                        (ExaminationModel.semestre == args['semestre'])
                        ).first():
                 abort(409,
@@ -105,7 +105,7 @@ class ExaminationList(Resource):
         args = request.get_json(force=True)
         if ExaminationModel.query.filter_by(
             id_instituicao_ensino=args['id_instituicao_ensino']).\
-            filter((ExaminationModel.nome == args['nome']) |
+            filter((ExaminationModel.nome == args['nome']) &
                    (ExaminationModel.ano == args['ano']) &
                    (ExaminationModel.semestre == args['semestre'])
                    ).first():
