@@ -86,15 +86,57 @@ class AlternativesList(Resource):
 
 
 class Alternative(Resource):
-        def delete(self, id):
-            alternative = AlternativesModel.query.filter_by(id=id).first_or_404()
-            try:
-                db.session.delete(alternative)
-                db.session.commit()
-            except IntegrityError:
-                abort(409, message="You can't delete an alternative that is used in other models.")
 
-            return 204
+    @marshal_with(alternative_fields)
+    def put(self, id):
+        args = request.get_json(force=True)
+        alternative = AlternativesModel.query.filter_by(id=id).first_or_404()
+
+        # Make sure required fields are there
+        if args['descricao'] and args['alternativa_correta'] is not None:
+
+            # Make sure the fields are unique
+            if AlternativesModel.query.filter(AlternativesModel.id != args['id']).\
+                filter((AlternativesModel.id_questao == args['id_questao']) &
+                       (AlternativesModel.descricao == args['descricao']) &
+                       (AlternativesModel.alternativa_correta == args['alternativa_correta'])
+                       ).first():
+                abort(409,
+                      message="An alternative for this question with this description already exists")
+
+            question_alternatives = AlternativesModel.query.filter(AlternativesModel.id_questao == args['id_questao'])
+            corrects = question_alternatives.filter(AlternativesModel.alternativa_correta == True)
+
+            def contains(list, filter):
+                for x in list:
+                    if filter(x):
+                        return True
+                return False
+
+            # A question must just one correct answer
+            if corrects.count() > 0 and not contains(corrects, lambda alternative: alternative.id == id)\
+               and (args['alternativa_correta'] == True):
+                abort(409, message="This question already has an correct alternative")
+            else:
+                alternative.descricao = args['descricao']
+                alternative.id_questao = args['id_questao']
+                alternative.alternativa_correta = args['alternativa_correta']
+
+            # Commit and return
+            db.session.commit()
+            alternative.id
+            return alternative
+
+
+    def delete(self, id):
+        alternative = AlternativesModel.query.filter_by(id=id).first_or_404()
+        try:
+            db.session.delete(alternative)
+            db.session.commit()
+        except IntegrityError:
+            abort(409, message="You can't delete an alternative that is used in other models.")
+
+        return 204
 
 api.add_resource(QuestionsList, '/questions')
 api.add_resource(QuestionsExamination, '/questions/examination/<int:examination_id>')
