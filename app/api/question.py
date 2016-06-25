@@ -8,16 +8,9 @@ from . import api as api_bp
 from .. import db
 from ..models.question import Question as QuestionModel, Alternatives as AlternativesModel
 
-api = Api(api_bp)
+import random
 
-question_fields = {
-    'id': fields.Integer,
-    'id_concurso': fields.Integer,
-    'id_area_conhecimento': fields.Integer,
-    'descricao': fields.String,
-    'numero_acertos': fields.Integer,
-    'numero_erros': fields.Integer
-}
+api = Api(api_bp)
 
 alternative_fields = {
     'id': fields.Integer,
@@ -26,13 +19,39 @@ alternative_fields = {
     'alternativa_correta': fields.Boolean,
 }
 
+question_fields = {
+    'id': fields.Integer,
+    'id_concurso': fields.Integer,
+    'id_area_conhecimento': fields.Integer,
+    'descricao': fields.String,
+    'numero_acertos': fields.Integer,
+    'numero_erros': fields.Integer,
+    'alternativas': fields.Nested(alternative_fields)
+}
+
 
 class Question(Resource):
 
     @marshal_with(question_fields)
-    def get(self, id):
-        question = QuestionModel.query.filter_by(id=id).first_or_404()
-        return question, 200
+    def get(self, id=None):
+        if isinstance(id, int):
+            question = QuestionModel.query.filter_by(id=id).first_or_404()
+            return question, 200
+        else:
+            # Gets the list of subjects
+            parser = reqparse.RequestParser()
+            parser.add_argument('subjects', help="List of the IDs of the subjects", location='args')
+            subjects = map(int,parser.parse_args()['subjects'].split(','))
+
+            if subjects is not None:
+                questions = QuestionModel.query.filter(QuestionModel.id_area_conhecimento.in_(subjects)).all()
+                if len(questions) < 1:
+                    return 404
+            else:
+                questions = QuestionModel.query.all()
+            question = random.choice(questions)
+
+            return question, 200
 
 
 class QuestionsList(Resource):
@@ -140,7 +159,7 @@ class Alternative(Resource):
 
 api.add_resource(QuestionsList, '/questions')
 api.add_resource(QuestionsExamination, '/questions/examination/<int:examination_id>')
-api.add_resource(Question, '/question/<int:id>')
+api.add_resource(Question, *['/question','/question/<int:id>'])
 api.add_resource(QuestionAlternativesList, '/question/alternatives/<int:question_id>')
 api.add_resource(AlternativesList, '/alternatives')
 api.add_resource(Alternative, '/alternative/<int:id>')

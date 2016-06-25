@@ -42,9 +42,7 @@ class Alternatives(db.Model):
     alternativa_correta = db.Column(db.Boolean, default=False)
 
     # Relationships
-    question = db.relationship('Question',
-                               backref=db.backref('choices', lazy='dynamic'),
-                               lazy='select')
+    question = db.relationship('Question', backref=db.backref('alternativas'), lazy='select')
 
     def __init__(self, id_questao, descricao, alternativa_correta):
         self.id_questao = id_questao
