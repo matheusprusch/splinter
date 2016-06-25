@@ -7,6 +7,7 @@ from sqlalchemy.exc import IntegrityError
 from . import api as api_bp
 from .. import db
 from ..models.question import Question as QuestionModel, Alternatives as AlternativesModel
+from ..models.user import User as UserModel, UserReport as UserReportModel
 
 import random
 
@@ -157,9 +158,50 @@ class Alternative(Resource):
 
         return 204
 
+class Answer(Resource):
+    def post(self):
+
+        # Gets the list of subjects
+        parser = reqparse.RequestParser()
+        parser.add_argument('alternative_id', help="ID of question answered", location='json')
+        alternative_id = int(parser.parse_args()['alternative_id'])
+        alternative = AlternativesModel.query.filter_by(id=alternative_id).first_or_404()
+
+        # user = auth.username()
+        # Mestre Splinter - The master of Gambis
+        user = UserModel.query.filter_by(email='splinter@example.com').first()
+        if user is None:
+            user = UserModel('Splinter', 'splinter@example.com', 'splinter', True)
+            db.session.add(user)
+            db.session.commit()
+
+        question = QuestionModel.query.filter_by(id=alternative.id_questao).first()
+        report = UserReportModel.query.filter_by(id_usuario=user.id).\
+            filter_by(id_area_conhecimento=question.id_area_conhecimento).first()
+
+        if report is None:
+            report = UserReportModel(user.id, question.id_area_conhecimento)
+            db.session.add(report)
+            db.session.commit()
+
+        if alternative.alternativa_correta == True:
+            QuestionModel.query.filter_by(id=alternative.id_questao).\
+                update({QuestionModel.numero_acertos: QuestionModel.numero_acertos + 1}, synchronize_session=False)
+            UserReportModel.query.filter_by(id=report.id).\
+                update({UserReportModel.numero_acertos: UserReportModel.numero_acertos + 1}, synchronize_session=False)
+        else:
+            QuestionModel.query.filter_by(id=alternative.id_questao).\
+                update({QuestionModel.numero_erros: QuestionModel.numero_erros + 1}, synchronize_session=False)
+            UserReportModel.query.filter_by(id=report.id).\
+                update({UserReportModel.numero_erros: UserReportModel.numero_erros + 1}, synchronize_session=False)
+
+        db.session.commit()
+        return 200
+
 api.add_resource(QuestionsList, '/questions')
 api.add_resource(QuestionsExamination, '/questions/examination/<int:examination_id>')
 api.add_resource(Question, *['/question','/question/<int:id>'])
 api.add_resource(QuestionAlternativesList, '/question/alternatives/<int:question_id>')
 api.add_resource(AlternativesList, '/alternatives')
 api.add_resource(Alternative, '/alternative/<int:id>')
+api.add_resource(Answer, '/questions/answer')
