@@ -91,8 +91,10 @@ class AlternativesList(Resource):
     @marshal_with(alternative_fields)
     def post(self):
         args = request.get_json(force=True)
-        if AlternativesModel.query.\
-            filter(AlternativesModel.descricao == args['descricao']).first():
+        if AlternativesModel.query.filter(AlternativesModel.id != args['id']).\
+            filter(
+                (AlternativesModel.id_questao == args['id_questao']) &
+                (AlternativesModel.descricao == args['descricao'])).first():
             abort(409, message="This alternative already exists.") 
         if args['alternativa_correta'] and AlternativesModel.query.filter_by(id_questao=args['id_questao']).\
                 filter(AlternativesModel.alternativa_correta == True).count() >= 1:
