@@ -20,10 +20,16 @@ alternative_fields = {
     'alternativa_correta': fields.Boolean,
 }
 
+subject_fields = {
+    'id': fields.Integer,
+    'nome': fields.String
+}
+
 question_fields = {
     'id': fields.Integer,
     'id_concurso': fields.Integer,
     'id_area_conhecimento': fields.Integer,
+    'area_conhecimento': fields.Nested(subject_fields),
     'descricao': fields.String,
     'numero_acertos': fields.Integer,
     'numero_erros': fields.Integer,
@@ -53,6 +59,46 @@ class Question(Resource):
             question = random.choice(questions)
 
             return question, 200
+
+
+    @marshal_with(question_fields)
+    def put(self, id):
+        args = request.get_json(force=True)
+        question = QuestionModel.query.filter_by(id=id).first_or_404()
+
+        # Make sure required fields are there
+        if args['descricao'] and args['id_area_conhecimento'] is not None:
+
+            # # Make sure the fields are unique
+            if QuestionModel.query.filter(QuestionModel.id != args['id']).\
+                filter((QuestionModel.descricao == args['descricao']) &
+                       (QuestionModel.id_area_conhecimento == args['id_area_conhecimento']) &
+                       (QuestionModel.id_concurso == args['id_concurso'])
+                       ).first():
+                abort(409,
+                      message="A question with this description and subject" +
+                      " already exists for this examination")
+            else:
+                question.descricao = args['descricao']
+                question.id_area_conhecimento = args['id_area_conhecimento']
+
+        else:
+            abort(409, message="Missing fields")
+
+        # Commit and return
+        db.session.commit()
+        question.id
+        return question
+
+    def delete(self, id):
+        question = QuestionModel.query.filter_by(id=id).first_or_404()
+        try:
+            db.session.delete(question)
+            db.session.commit()
+        except IntegrityError:
+            abort(409, message="You can't delete a question that is used in other models.")
+
+        return 204
 
 
 class QuestionsList(Resource):
@@ -95,7 +141,7 @@ class AlternativesList(Resource):
             filter(
                 (AlternativesModel.id_questao == args['id_questao']) &
                 (AlternativesModel.descricao == args['descricao'])).first():
-            abort(409, message="This alternative already exists.") 
+            abort(409, message="This alternative already exists.")
         if args['alternativa_correta'] and AlternativesModel.query.filter_by(id_questao=args['id_questao']).\
                 filter(AlternativesModel.alternativa_correta == True).count() >= 1:
             abort(409, message="You can't add two correct alternatives to the same question")
