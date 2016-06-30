@@ -149,7 +149,6 @@ class Alternative(Resource):
             alternative.id
             return alternative
 
-
     def delete(self, id):
         alternative = AlternativesModel.query.filter_by(id=id).first_or_404()
         try:
@@ -160,13 +159,11 @@ class Alternative(Resource):
 
         return 204
 
+
 class Answer(Resource):
     def post(self):
-
         # Gets the list of subjects
-        parser = reqparse.RequestParser()
-        parser.add_argument('alternative_id', help="ID of question answered", location='json')
-        alternative_id = int(parser.parse_args()['alternative_id'])
+        alternative_id = int(request.get_json(force=True))
         alternative = AlternativesModel.query.filter_by(id=alternative_id).first_or_404()
 
         # user = auth.username()
