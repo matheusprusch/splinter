@@ -111,7 +111,7 @@ class UserList(Resource):
 
 class Report(Resource):
 
-    @marshal_with(user_report_fields)
+    # @marshal_with(user_report_fields)
     def get(self):
         # user = auth.username()
         # Mestre Splinter - The master of Gambis
@@ -129,7 +129,8 @@ class Report(Resource):
             report_subjects.append(sr)
 
         user.report = report_subjects
-        return user, 200
+        # return user, 200
+        return {'reportsubjects': marshal(report_subjects, report_fields)}, 200
 
 
 class SubjectReport:
